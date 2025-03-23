@@ -17,30 +17,18 @@ namespace TaskManagement.Controllers
             _userService = userService;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserModel model)
+        [HttpPost("Register")]
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserModel userDto)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var user = new ApplicationUser
-                {
-                    UserName = model.Email,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName
-                };
-
-                try
-                {
-                    var result = await _userService.RegisterUserAsync(user, model.Password);
-                    return Ok(new { message = "User registered successfully." });
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(new { message = ex.Message });
-                }
+                await _userService.RegisterUserAsync(userDto);
+                return Ok("User registered successfully.");
             }
-
-            return BadRequest("Invalid data.");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
