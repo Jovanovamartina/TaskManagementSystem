@@ -25,8 +25,8 @@ namespace TaskManagement.Controllers
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
-                    FullName = model.FullName,
-                    Address = model.Address,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName
                 };
 
                 try
