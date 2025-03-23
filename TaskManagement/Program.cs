@@ -1,5 +1,9 @@
+using Application_TaskManagement.IRepositories;
+using Application_TaskManagement.IServices;
+using Application_TaskManagement.Services;
 using Core_TaskManagement.Entities;
 using Infrastructure_TaskManagement.Database;
+using Infrastructure_TaskManagement.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +23,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+
+
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+  
 
 var app = builder.Build();
 
