@@ -29,7 +29,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
-
+//services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
