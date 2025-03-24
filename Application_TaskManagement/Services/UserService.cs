@@ -3,14 +3,17 @@
 using Application_TaskManagement.DTOs;
 using Application_TaskManagement.IRepositories;
 using Application_TaskManagement.IServices;
-using AutoMapper;
 using Core_TaskManagement.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
 
 namespace Application_TaskManagement.Services
 {
@@ -20,58 +23,95 @@ namespace Application_TaskManagement.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly IEmailSender _emailSender;
+        private readonly Dictionary<string, string> _twoFactorCodes = new Dictionary<string, string>(); // In-memory storage for simplicity
 
-        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+
+
+        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IEmailSender emailSender)
         {
             _userRepository = userRepository;
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _emailSender = emailSender;
 
         }
 
-        public async Task<string> Authenticate(LoginDto userDto)
+        // Login method
+        public async Task<string> Authenticate(LoginDto loginDto)
         {
-            // Step 1: Find user by email
-            var user = await _userManager.FindByEmailAsync(userDto.Username);
-            if (user == null)
+            var user = await _userManager.FindByEmailAsync(loginDto.Username);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
-                throw new UnauthorizedAccessException("Invalid email or password.");
+                throw new UnauthorizedAccessException("Invalid email or password");
             }
 
-            // Step 2: Check if password is correct
-            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, userDto.Password);
-            if (!isPasswordCorrect)
-            {
-                throw new UnauthorizedAccessException("Invalid email or password.");
-            }
+            // After login success, generate and send 2FA code
+            await SendTwoFactorCode(loginDto.Username);
 
-            // Step 3: Generate JWT token
-            return GenerateJwtToken(user);
+            return "2FA code sent to email"; // Inform user to check email
         }
 
-        private string GenerateJwtToken(ApplicationUser user)
+        // Method to send 2FA code via email
+        public async Task<bool> SendTwoFactorCode(string email)
+        {
+            var code = new Random().Next(100000, 999999).ToString(); // Generate a 6-digit random code
+
+            // Save the code temporarily (in a real app, use a database or cache with expiration time)
+            _twoFactorCodes[email] = code;
+
+            // Send the code via email
+            var message = new SendGridMessage
+            {
+                From = new EmailAddress("your-email@example.com", "YourApp"),
+                Subject = "Your 2FA Code",
+                PlainTextContent = $"Your 2FA code is: {code}",
+                HtmlContent = $"<strong>Your 2FA code is: {code}</strong>"
+            };
+            message.AddTo(new EmailAddress(email));
+
+            var client = new SendGridClient("your-sendgrid-api-key"); // Replace with your SendGrid API Key
+            var response = await client.SendEmailAsync(message);
+
+            return response.StatusCode == System.Net.HttpStatusCode.OK;
+        }
+
+        // Method to verify the 2FA code entered by the user
+        public async Task<bool> VerifyTwoFactorCode(string email, string code)
+        {
+            if (_twoFactorCodes.ContainsKey(email) && _twoFactorCodes[email] == code)
+            {
+                // Code is valid, generate JWT
+                var user = await _userManager.FindByEmailAsync(email);
+                return GenerateJwtToken(user); // Generate and return a token
+            }
+
+            return false; // Invalid code
+        }
+
+        private bool GenerateJwtToken(ApplicationUser user)
         {
             var claims = new[]
             {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(ClaimTypes.Email, user.Email)
         };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                claims,
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            string jwtToken = tokenHandler.WriteToken(token);
+
+            return true; // Return success after generating the token
         }
 
         public async Task<ApplicationUser> RegisterUserAsync(RegisterDto registerDto)
