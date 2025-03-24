@@ -7,6 +7,6 @@ namespace Application_TaskManagement.IServices
 {
     public interface IUserService
     {
-        Task<ApplicationUser> RegisterUserAsync(RegisterUserModel registerUserModel);
+        Task<ApplicationUser> RegisterUserAsync(ReisterDto registerUserModel);
     }
 }
