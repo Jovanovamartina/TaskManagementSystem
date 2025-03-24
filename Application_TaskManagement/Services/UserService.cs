@@ -21,7 +21,7 @@ namespace Application_TaskManagement.Services
             _roleManager = roleManager;
         }
 
-        public async Task<ApplicationUser> RegisterUserAsync(RegisterUserModel registerDto)
+        public async Task<ApplicationUser> RegisterUserAsync(ReisterDto registerDto)
         {
             {
                 if (registerDto == null || string.IsNullOrWhiteSpace(registerDto.Password))

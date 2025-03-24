@@ -22,7 +22,7 @@ namespace TaskManagement.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserModel userDto)
+        public async Task<IActionResult> RegisterUser([FromBody] ReisterDto userDto)
         {
             try
             {

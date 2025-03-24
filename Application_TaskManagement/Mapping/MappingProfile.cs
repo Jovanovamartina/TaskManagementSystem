@@ -10,7 +10,7 @@ namespace Application_TaskManagement.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<RegisterUserModel, ApplicationUser>().ReverseMap();
+            CreateMap<ReisterDto, ApplicationUser>().ReverseMap();
 
         }
     }
