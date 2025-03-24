@@ -2,7 +2,7 @@
 
 namespace Application_TaskManagement.DTOs
 {
-    public class ReisterDto
+    public class RegisterDto
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

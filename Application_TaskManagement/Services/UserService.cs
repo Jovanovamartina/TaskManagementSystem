@@ -6,6 +6,11 @@ using Application_TaskManagement.IServices;
 using AutoMapper;
 using Core_TaskManagement.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Application_TaskManagement.Services
 {
@@ -14,14 +19,62 @@ namespace Application_TaskManagement.Services
         private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly IConfiguration _configuration;
+
+        public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _userManager = userManager;
             _roleManager = roleManager;
+            _configuration = configuration;
+
         }
 
-        public async Task<ApplicationUser> RegisterUserAsync(ReisterDto registerDto)
+        public async Task<string> Authenticate(LoginDto userDto)
+        {
+            // Step 1: Find user by email
+            var user = await _userManager.FindByEmailAsync(userDto.Username);
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException("Invalid email or password.");
+            }
+
+            // Step 2: Check if password is correct
+            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, userDto.Password);
+            if (!isPasswordCorrect)
+            {
+                throw new UnauthorizedAccessException("Invalid email or password.");
+            }
+
+            // Step 3: Generate JWT token
+            return GenerateJwtToken(user);
+        }
+
+        private string GenerateJwtToken(ApplicationUser user)
+        {
+            var claims = new[]
+            {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<ApplicationUser> RegisterUserAsync(RegisterDto registerDto)
         {
             {
                 if (registerDto == null || string.IsNullOrWhiteSpace(registerDto.Password))
