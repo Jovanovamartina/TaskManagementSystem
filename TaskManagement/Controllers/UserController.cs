@@ -1,7 +1,5 @@
 ﻿using Application_TaskManagement.DTOs;
 using Application_TaskManagement.IServices;
-using Core_TaskManagement.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -11,18 +9,12 @@ namespace TaskManagement.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
+        private readonly IAuthService _userService;
+       
 
-        public UserController(IUserService userService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public UserController(IAuthService userService)
         {
             _userService = userService;
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _configuration = configuration;
-
         }
 
         //HTTTP POST
@@ -40,29 +32,7 @@ namespace TaskManagement.Controllers
             }
         }
 
-        // POST api/auth/login
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
-        {
-            try
-            {
-                // Call Authenticate method to get JWT token
-                var token = await _userService.Authenticate(loginDto);
-
-                // Return the token in the response
-                return Ok(new { token });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // If credentials are invalid, return Unauthorized
-                return Unauthorized(new { message = "Invalid email or password" });
-            }
-            catch (Exception ex)
-            {
-                // Handle any other exceptions and return BadRequest
-                return BadRequest(new { message = ex.Message });
-            }
-        }
+      
     }
 }
 
