@@ -1,0 +1,11 @@
+﻿
+
+namespace Application_TaskManagement.DTOs
+{
+    public class AuthResponseDto
+    {
+        public string? Token { get; set; }
+        public string? Expiration { get; set; }
+    }
+
+}

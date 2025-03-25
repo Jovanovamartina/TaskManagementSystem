@@ -37,7 +37,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 
 //services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, UserService>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
 
