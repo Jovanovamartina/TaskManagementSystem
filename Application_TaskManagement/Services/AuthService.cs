@@ -2,6 +2,7 @@
 
 using Application_TaskManagement.DTOs;
 using Application_TaskManagement.IServices;
+using Application_TaskManagement.Token;
 using Core_TaskManagement.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -9,30 +10,64 @@ using Microsoft.Extensions.Configuration;
 
 namespace Application_TaskManagement.Services
 {
-    public class UserService : IAuthService
+    public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
 
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager)
+        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, JwtTokenGenerator jwtTokenGenerator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _roleManager = roleManager;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
         public Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
+        public async Task<AuthResponseDto> LoginUserAsync(LoginDto loginDto)
         {
-            throw new NotImplementedException();
+            if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) || string.IsNullOrWhiteSpace(loginDto.Password))
+            {
+                throw new ArgumentException("Email and password cannot be empty.");
+            }
+
+            // Find user by Email
+            var existingUser = await _userManager.FindByEmailAsync(loginDto.Username);
+            if (existingUser == null)
+            {
+                throw new UnauthorizedAccessException("Invalid credentials.");
+            }
+
+            // Check Password
+            var isPasswordValid = await _userManager.CheckPasswordAsync(existingUser, loginDto.Password);
+            if (!isPasswordValid)
+            {
+                throw new UnauthorizedAccessException("Invalid credentials.");
+            }
+
+            // Generate JWT Token
+            var token = _jwtTokenGenerator.GenerateJwtToken(existingUser);
+
+            // Return Token and User Info
+            return new AuthResponseDto
+            {
+                Token = token,
+                Email = existingUser.Email,         // ✅ Included
+                UserName = existingUser.UserName    // ✅ Included
+            };
         }
+
+
+
+
 
         public Task LogoutAsync()
         {
@@ -83,5 +118,6 @@ namespace Application_TaskManagement.Services
             return result;
         }
 
+       
     }
 }

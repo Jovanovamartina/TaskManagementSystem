@@ -5,7 +5,7 @@ namespace Application_TaskManagement.DTOs
     public class AuthResponseDto
     {
         public string? Token { get; set; }
-        public string? Expiration { get; set; }
+        public string? UserName { get; set; }    
+        public string? Email { get; set; }       
     }
-
 }

@@ -1,6 +1,7 @@
 using Application_TaskManagement.IRepositories;
 using Application_TaskManagement.IServices;
 using Application_TaskManagement.Services;
+using Application_TaskManagement.Token;
 using Core_TaskManagement.Entities;
 using Infrastructure_TaskManagement.Database;
 using Infrastructure_TaskManagement.MailSender;
@@ -37,8 +38,11 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 
 //services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddScoped<JwtTokenGenerator>();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
 
 
 builder.Services.AddTransient<IRoleSeeder, RoleSeeder>();
@@ -64,8 +68,7 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-//var roleSeeder = app.Services.GetRequiredService<IRoleSeeder>();
-//await roleSeeder.CreateRolesAsync();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -73,14 +76,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    // Renaming the variable to avoid conflict
-//    var roleSeederService = scope.ServiceProvider.GetRequiredService<IRoleSeeder>();
 
-//    // Call CreateRolesAsync on the resolved instance
-//    await roleSeederService.CreateRolesAsync(); // No arguments needed
-//}
 
 app.UseHttpsRedirection();
 
