@@ -1,7 +1,6 @@
-﻿using Application_TaskManagement.DTOs;
-using Application_TaskManagement.IServices;
+﻿using Application_TaskManagement.IServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace TaskManagement.Controllers
 {
@@ -9,47 +8,16 @@ namespace TaskManagement.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IAuthService _userService;
-       
-
-        public UserController(IAuthService userService)
+        private readonly IUserService _userService;
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }
-
-        //HTTTP POST
-        [HttpPost("Register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterDto userDto)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                await _userService.RegisterUserAsync(userDto);
-                return Ok("User registered successfully.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
-        {
-            try
-            {
-                var token = await _userService.LoginUserAsync(loginDto);
-                return Ok(new { Token = token });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized("Invalid email or password.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var users = await _userService.GetUsers();
+            return Ok(users);
         }
     }
 }
-
-

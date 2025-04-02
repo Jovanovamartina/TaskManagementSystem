@@ -37,8 +37,8 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 
 
 //services
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
