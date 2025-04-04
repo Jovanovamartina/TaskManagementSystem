@@ -19,5 +19,17 @@ namespace TaskManagement.Controllers
             var users = await _userService.GetUsers();
             return Ok(users);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            var user = await _userService.GetUser(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user); 
+        }
     }
 }

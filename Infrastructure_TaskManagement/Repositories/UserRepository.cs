@@ -38,11 +38,6 @@ namespace Infrastructure_TaskManagement.Repositories
             return await users.ToListAsync();
         }
 
-        public async Task<ApplicationUser> GetByIdAsync(string id)
-        {
-            return await _userManager.FindByIdAsync(id);
-
-        }
 
         public async Task<ApplicationUser> RegisterUserAsync(ApplicationUser user, string password)
         {
@@ -62,6 +57,11 @@ namespace Infrastructure_TaskManagement.Repositories
         public async Task UpdateAsync(ApplicationUser entity)
         {
             await _userManager.UpdateAsync(entity);
+        }
+
+        async Task<ApplicationUser> IRepository<ApplicationUser>.GetByIdAsync(int id)
+        {
+            return await _context.Set<ApplicationUser>().FindAsync(id);
         }
     }
 }

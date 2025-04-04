@@ -13,6 +13,12 @@ namespace Application_TaskManagement.Services
         {
             _useRepository = useRepository; 
         }
+
+        public async Task<ApplicationUser> GetUser(int id)
+        {
+            return await _useRepository.GetByIdAsync(id);
+        }
+
         public async Task<IEnumerable<ApplicationUser>> GetUsers()
         {
             return await _useRepository.GetAllAsync();

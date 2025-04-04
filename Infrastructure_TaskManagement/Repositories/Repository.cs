@@ -36,11 +36,12 @@ namespace Infrastructure_TaskManagement.Repositories
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(string id)
+        public async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
 
+     
         public async Task UpdateAsync(T entity)
         {
             _context.Set<T>().Update(entity);
