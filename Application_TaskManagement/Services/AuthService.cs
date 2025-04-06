@@ -61,7 +61,7 @@ namespace Application_TaskManagement.Services
             {
                 Token = token,
                 Email = existingUser.Email,         // ✅ Included
-                UserName = existingUser.UserName    // ✅ Included
+                userName = existingUser.UserName    // ✅ Included
             };
         }
 

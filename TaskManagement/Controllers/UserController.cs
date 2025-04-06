@@ -24,7 +24,28 @@ namespace TaskManagement.Controllers
             try
             {
                 await _userService.RegisterUserAsync(userDto);
-                return Ok("User registered successfully.");
+                // Return a JSON response for success
+                return Ok(new { message = "User registered successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Return a JSON response for errors
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            try
+            {
+                var response = await _userService.LoginUserAsync(loginDto);
+                return Ok(new { Token = response.Token });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("Invalid username or password.");
             }
             catch (Exception ex)
             {
@@ -32,23 +53,7 @@ namespace TaskManagement.Controllers
             }
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
-        {
-            try
-            {
-                var token = await _userService.LoginUserAsync(loginDto);
-                return Ok(new { Token = token });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized("Invalid email or password.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+
     }
 }
 
