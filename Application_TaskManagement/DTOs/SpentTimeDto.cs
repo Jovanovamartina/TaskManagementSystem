@@ -11,5 +11,6 @@ namespace Application_TaskManagement.DTOs
         public string? Comment { get; set; }
         public DateTime Date { get; set; }
         public double Hours { get; set; }
+
     }
 }
