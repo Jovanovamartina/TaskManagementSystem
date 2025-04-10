@@ -68,9 +68,9 @@ namespace Application_TaskManagement.Services
 
 
 
-        public Task LogoutAsync()
+        public  Task LogoutAsync()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
 
