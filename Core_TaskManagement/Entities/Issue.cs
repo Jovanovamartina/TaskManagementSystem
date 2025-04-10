@@ -26,6 +26,7 @@ namespace Core_TaskManagement.Entities
         public double EstimatedTime { get; set; }
         public int PercentageDone { get; set; }
         public ICollection<Comment>? Comments { get; set; }
+        public ICollection<LogTime>? LogTimes { get; set; }
 
     }
 }

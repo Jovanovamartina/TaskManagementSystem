@@ -15,6 +15,7 @@ namespace Core_TaskManagement.Entities
         public ProjectPrioriry Priority { get; set; }
         public ICollection<ApplicationUser>? AssignedTeamMembers { get; set; }
         public ICollection<Issue>? Issues { get; set; }
+        public ICollection<News>? News { get; set; } 
 
     }
 

@@ -3,13 +3,12 @@ using Application_TaskManagement.IServices;
 using Application_TaskManagement.Services;
 using Application_TaskManagement.Token;
 using Core_TaskManagement.Entities;
+using Core_TaskManagement.JWT;
 using Infrastructure_TaskManagement.Database;
-using Infrastructure_TaskManagement.MailSender;
 using Infrastructure_TaskManagement.Repositories;
 using Infrastructure_TaskManagement.Roles;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -43,13 +42,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 
 //services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 

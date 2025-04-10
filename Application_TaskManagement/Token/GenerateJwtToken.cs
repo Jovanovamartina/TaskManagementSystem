@@ -1,5 +1,4 @@
-﻿using Core_TaskManagement.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,6 +13,7 @@ namespace Application_TaskManagement.Token
     using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Tokens;
     using Core_TaskManagement.Entities;
+    using Core_TaskManagement.JWT;
 
     public class JwtTokenGenerator
     {
