@@ -7,6 +7,5 @@ namespace Application_TaskManagement.DTOs
     {
         public string? Token { get; set; }
         public string? Email { get; set; }
-        public string? userName { get; set; }
     }
 }

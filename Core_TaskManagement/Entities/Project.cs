@@ -13,8 +13,9 @@ namespace Core_TaskManagement.Entities
         public DateTime EndDate { get; set; }
         public ProjectStatus Status { get; set; }
         public ProjectPrioriry Priority { get; set; }
-        public List<ApplicationUser>? AssignedTeamMembers { get; set; }
-        public List<Issue>? Tasks { get; set; }
+        public ICollection<ApplicationUser>? AssignedTeamMembers { get; set; }
+        public ICollection<Issue>? Issues { get; set; }
+
     }
 
 }

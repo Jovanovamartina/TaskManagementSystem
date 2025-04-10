@@ -34,13 +34,13 @@ namespace Application_TaskManagement.Services
 
         public async Task<AuthResponseDto> LoginUserAsync(LoginDto loginDto)
         {
-            if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) || string.IsNullOrWhiteSpace(loginDto.Password))
+            if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Email) || string.IsNullOrWhiteSpace(loginDto.Password))
             {
                 throw new ArgumentException("Email and password cannot be empty.");
             }
 
             // Find user by Email
-            var existingUser = await _userManager.FindByEmailAsync(loginDto.Username);
+            var existingUser = await _userManager.FindByEmailAsync(loginDto.Email);
             if (existingUser == null)
             {
                 throw new UnauthorizedAccessException("Invalid credentials.");
@@ -60,8 +60,7 @@ namespace Application_TaskManagement.Services
             return new AuthResponseDto
             {
                 Token = token,
-                Email = existingUser.Email,         // ✅ Included
-                userName = existingUser.UserName    // ✅ Included
+                Email = existingUser.Email
             };
         }
 

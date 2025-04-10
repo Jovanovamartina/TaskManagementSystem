@@ -2,11 +2,10 @@
 
 namespace Application_TaskManagement.DTOs
 {
-    public class NewsDto
+    public class TaskReminderDto
     {
         public string? Title { get; set; }
         public string? Description { get; set; }
-        public string? FilePath { get; set; }
-        public int ProjectId { get; set; }
+        public DateTime DueDate { get; set; }
     }
 }

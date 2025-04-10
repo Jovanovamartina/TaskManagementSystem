@@ -6,8 +6,8 @@ namespace Core_TaskManagement.Entities
     public class LogTime
     {
         public int Id { get; set; }
-        public int TaskId { get; set; }
-        public Issue? Task { get; set; }
+        public int IssueId { get; set; }
+        public Issue? Issue { get; set; }
         public string? UserId { get; set; }
         public ApplicationUser? User { get; set; }
         public DateTime Date { get; set; }
