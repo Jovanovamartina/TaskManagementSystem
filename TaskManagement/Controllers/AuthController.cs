@@ -7,12 +7,12 @@ namespace TaskManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly IAuthService _userService;
        
 
-        public UserController(IAuthService userService)
+        public AuthController(IAuthService userService)
         {
             _userService = userService;
         }
