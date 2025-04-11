@@ -18,7 +18,6 @@ namespace Application_TaskManagement.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-
         public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, JwtTokenGenerator jwtTokenGenerator)
         {
             _userManager = userManager;
@@ -27,9 +26,19 @@ namespace Application_TaskManagement.Services
             _roleManager = roleManager;
             _jwtTokenGenerator = jwtTokenGenerator;
         }
-        public Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
+
+        public async Task ChangePasswordAsync(ApplicationUser user, ChangePasswordDto dto)
         {
-            throw new NotImplementedException();
+            if (dto.NewPassword != dto.RepeatNewPassword)
+                throw new ArgumentException("New passwords do not match.");
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException(errorMessage);
+            }
         }
 
         public async Task<AuthResponseDto> LoginUserAsync(LoginDto loginDto)
@@ -64,15 +73,10 @@ namespace Application_TaskManagement.Services
             };
         }
 
-
-
-
-
-        public  Task LogoutAsync()
+        public async Task LogoutAsync()
         {
-            return Task.CompletedTask;
+            await _signInManager.SignOutAsync();
         }
-
 
         //Register 
         public async Task<IdentityResult> RegisterUserAsync(RegisterDto registerDto)
@@ -116,7 +120,5 @@ namespace Application_TaskManagement.Services
 
             return result;
         }
-
-       
     }
 }
