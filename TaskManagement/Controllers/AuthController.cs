@@ -85,7 +85,7 @@ namespace TaskManagement.Controllers
         public async Task<IActionResult> Logout()
         {
             await _authService.LogoutAsync();
-            return Ok(new { message = "Logged out successfully." });
+            return Ok(new { message = "Loged out successfully." });
         }
     }
 }
