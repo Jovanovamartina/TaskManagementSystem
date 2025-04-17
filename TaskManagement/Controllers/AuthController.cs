@@ -15,20 +15,23 @@ namespace TaskManagement.Controllers
     {
         private readonly IAuthService _authService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService userService, UserManager<ApplicationUser> authManager)
+        public AuthController(IAuthService userService, UserManager<ApplicationUser> authManager, ILogger<AuthController> logger)
         {
             _authService = userService;
             _userManager = authManager;
+            _logger = logger;
         }
 
         //HTTTP POST
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto userDto)
         {
-           
-                await _authService.RegisterUserAsync(userDto);
-                return Ok(new { message = "User registered successfully." });
+            _logger.LogInformation("Received registration request for user: {Email}", userDto.Email);
+            await _authService.RegisterUserAsync(userDto);
+            _logger.LogInformation("User {Email} registration process completed.", userDto.Email);
+            return Ok(new { message = "User registered successfully." });
         }
 
 
