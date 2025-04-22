@@ -42,7 +42,7 @@ namespace TaskManagement.Controllers
                 var response = await _authService.LoginUserAsync(loginDto);
                 return Ok(new { Token = response.Token });
         }
-
+        [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {

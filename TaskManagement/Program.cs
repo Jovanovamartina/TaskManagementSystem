@@ -16,6 +16,24 @@ using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "Issuer",
+        ValidAudience = "Audience",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySuperSecretKey_AtLeast32CharsLongMustBe"))
+    };
+});
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -103,6 +121,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseExceptionHandler();
 app.MapControllers();
