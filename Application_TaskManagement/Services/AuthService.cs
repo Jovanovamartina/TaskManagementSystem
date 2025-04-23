@@ -27,19 +27,7 @@ namespace Application_TaskManagement.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task ChangePasswordAsync(ApplicationUser user, ChangePasswordDto dto)
-        {
-            if (dto.NewPassword != dto.RepeatNewPassword)
-                throw new ArgumentException("New passwords do not match.");
-
-            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
-
-            if (!result.Succeeded)
-            {
-                var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new InvalidOperationException(errorMessage);
-            }
-        }
+      
 
         public async Task<AuthResponseDto> LoginUserAsync(LoginDto loginDto)
         {
@@ -63,7 +51,7 @@ namespace Application_TaskManagement.Services
             }
 
             // Generate JWT Token
-            var token = _jwtTokenGenerator.GenerateJwtToken(existingUser);
+            var token =await _jwtTokenGenerator.GenerateJwtToken(existingUser);
 
             // Return Token and User Info
             return new AuthResponseDto
@@ -119,6 +107,20 @@ namespace Application_TaskManagement.Services
             }
 
             return result;
+        }
+
+        public async Task ChangePasswordAsync(ApplicationUser user, ChangePasswordDto dto)
+        {
+            if (dto.NewPassword != dto.RepeatNewPassword)
+                throw new ArgumentException("New passwords do not match.");
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException(errorMessage);
+            }
         }
     }
 }

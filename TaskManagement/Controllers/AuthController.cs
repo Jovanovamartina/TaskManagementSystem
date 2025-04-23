@@ -24,7 +24,7 @@ namespace TaskManagement.Controllers
             _logger = logger;
         }
 
-        //HTTTP POST
+        //REGISTER
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto userDto)
         {
@@ -34,7 +34,7 @@ namespace TaskManagement.Controllers
             return Ok(new { message = "User registered successfully." });
         }
 
-
+        //LOGIN
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
@@ -42,6 +42,7 @@ namespace TaskManagement.Controllers
                 var response = await _authService.LoginUserAsync(loginDto);
                 return Ok(new { Token = response.Token });
         }
+
         [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
