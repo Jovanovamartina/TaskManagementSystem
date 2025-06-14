@@ -10,7 +10,5 @@ namespace Application_TaskManagement.IServices
     {
         Task<IdentityResult> RegisterUserAsync(RegisterDto registerDto);
         Task<AuthResponseDto> LoginUserAsync(LoginDto loginDto);
-        Task ChangePasswordAsync(ApplicationUser user, ChangePasswordDto dto);
-        Task LogoutAsync();
     }
 }

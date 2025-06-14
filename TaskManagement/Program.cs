@@ -46,12 +46,23 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+});
 
 
+
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+
 
 var app = builder.Build();
+
 
 
 // Configure the HTTP request pipeline.
