@@ -1,7 +1,6 @@
 ﻿
 
 using Application_TaskManagement.DTOs;
-using Core_TaskManagement.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application_TaskManagement.IServices
