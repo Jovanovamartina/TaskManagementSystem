@@ -1,72 +1,50 @@
-using Application_TaskManagement.IRepositories;
-using Application_TaskManagement.IServices;
-using Application_TaskManagement.Services;
-using Application_TaskManagement.Token;
-using Core_TaskManagement.Entities;
+
 using Infrastructure_TaskManagement.Database;
-using Infrastructure_TaskManagement.MailSender;
-using Infrastructure_TaskManagement.Repositories;
-using Infrastructure_TaskManagement.Roles;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Serilog;
+using TaskManagement.Extensions;
+using TaskManagement.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//Services
+builder.Services.AddJwtAuthentication();
+builder.Services.AddProblemDetails();
+builder.Services.AddCustomCors();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add services to the container.
+//Logging
+LoggingConfiguration.ConfigureLogging(builder.Configuration);
+builder.Host.UseSerilog();
+
+
+// DB
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString")));
 
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-
-
-//services
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddSingleton<IEmailSender, EmailSender>();
-builder.Services.AddScoped<JwtTokenGenerator>();
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-
-
-
-builder.Services.AddTransient<IRoleSeeder, RoleSeeder>();
-
-//JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
-        };
-    });
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+});
 
+
+
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+
 
 var app = builder.Build();
+
 
 
 // Configure the HTTP request pipeline.
@@ -79,9 +57,10 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowReactApp");
+app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseExceptionHandler();
 app.MapControllers();
 
 app.Run();
