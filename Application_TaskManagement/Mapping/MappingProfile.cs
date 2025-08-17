@@ -1,8 +1,6 @@
 ﻿
 
-using Application_TaskManagement.DTOs;
 using AutoMapper;
-using Core_TaskManagement.Entities;
 
 namespace Application_TaskManagement.Mapping
 {
@@ -10,7 +8,6 @@ namespace Application_TaskManagement.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<RegisterDto, ApplicationUser>().ReverseMap();
 
         }
     }

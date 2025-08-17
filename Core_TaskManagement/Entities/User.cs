@@ -1,11 +1,11 @@
 ﻿
 
-using Microsoft.AspNetCore.Identity;
 
 namespace Core_TaskManagement.Entities
 {
-    public class ApplicationUser : IdentityUser
+    public class User 
     {
+        public int UserID { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public ICollection<Project>? AssignedProjects { get; set; }

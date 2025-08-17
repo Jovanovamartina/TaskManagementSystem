@@ -1,14 +1,15 @@
 ﻿
 using Core_TaskManagement.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure_TaskManagement.Database
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
+    public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
 
         public DbSet<Project> Projects { get; set; }
         public DbSet<Issue> Issues { get; set; }
@@ -21,26 +22,38 @@ namespace Infrastructure_TaskManagement.Database
         {
             base.OnModelCreating(modelBuilder);
 
-            //ApplicationUser
-            modelBuilder.Entity<ApplicationUser>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
+                entity.ToTable("Users");
+                entity.HasKey(u => u.UserID);
 
-                entity.HasMany(u => u.Comments)
-                .WithOne(c => c.Author)
-                .HasForeignKey(c => c.AuthorId);
+                entity.Property(u => u.FirstName)
+                      .HasMaxLength(100)  
+                      .IsRequired(false);  
+
+                entity.Property(u => u.LastName)
+                      .HasMaxLength(100)
+                      .IsRequired(false);
+
+                entity.HasMany(u => u.AssignedProjects)
+         .WithMany(p => p.AssignedTeamMembers) 
+         .UsingEntity<Dictionary<string, object>>(
+             "UserProject",
+             j => j.HasOne<Project>().WithMany().HasForeignKey("ProjectId"),
+             j => j.HasOne<User>().WithMany().HasForeignKey("UserId")
+         );
+
+                entity.HasMany(u => u.Comments)   
+         .WithOne(c => c.Author)           
+         .HasForeignKey(c => c.AuthorId)     
+         .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasMany(u => u.LogTimes)
-                .WithOne(l => l.User)
-                .HasForeignKey(l => l.UserId);
-
-                modelBuilder.Entity<ApplicationUser>()
-                    .Property(u => u.FirstName)
-                    .HasMaxLength(20);
-
-                modelBuilder.Entity<ApplicationUser>()
-                    .Property(u => u.LastName)
-                    .HasMaxLength(20);
+                      .WithOne(l => l.User) 
+                      .HasForeignKey(l => l.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
+        
 
             //Project
             modelBuilder.Entity<Project>(entity =>
@@ -67,7 +80,7 @@ namespace Infrastructure_TaskManagement.Database
                       .WithMany(u => u.AssignedProjects)
                       .UsingEntity<Dictionary<string, object>>(
                "ProjectApplicationUser",
-               j => j.HasOne<ApplicationUser>()
+               j => j.HasOne<User>()
                      .WithMany()
                      .HasForeignKey("UserId")
                      .OnDelete(DeleteBehavior.Cascade),

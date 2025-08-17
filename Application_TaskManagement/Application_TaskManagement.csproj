@@ -25,4 +25,10 @@
     <ProjectReference Include="..\Core_TaskManagement\Core_TaskManagement.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\" />
+    <Folder Include="IServices\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

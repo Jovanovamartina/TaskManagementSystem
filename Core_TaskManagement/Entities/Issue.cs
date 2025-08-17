@@ -10,10 +10,10 @@ namespace Core_TaskManagement.Entities
         public int Code { get; set; }
         public int ProjectId { get; set; }  
         public Project? Project { get; set; } 
-        public string? CreatedByUserId { get; set; }
-        public ApplicationUser? CreatedBy { get; set; }
-        public string? AssignedUserId { get; set; }
-        public ApplicationUser? AssignedUser { get; set; }
+        public int? CreatedByUserId { get; set; }
+        public User? CreatedBy { get; set; }
+        public int? AssignedUserId { get; set; }
+        public User? AssignedUser { get; set; }
         public IssueType TaskType { get; set; }
         public string? Title { get; set; } 
         public string? Description { get; set; } 

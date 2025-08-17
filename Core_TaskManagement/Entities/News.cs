@@ -11,7 +11,7 @@ namespace Core_TaskManagement.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public int ProjectId { get; set; }
         public Project? Project { get; set; }
-        public string? CreatedByUserId { get; set; }
-        public ApplicationUser? CreatedByUser { get; set; }
+        public int? CreatedByUserId { get; set; }
+        public User? CreatedByUser { get; set; }
     }
 }
