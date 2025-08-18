@@ -1,9 +1,13 @@
 
+using Application_TaskManagement.IRepositories;
+using Application_TaskManagement.IServices;
+using Application_TaskManagement.Mapping;
+using Application_TaskManagement.Services;
+using Core_TaskManagement.Entities;
 using Infrastructure_TaskManagement.Database;
+using Infrastructure_TaskManagement.Repository;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using TaskManagement.Extensions;
-using TaskManagement.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,15 +15,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddJwtAuthentication();
 builder.Services.AddProblemDetails();
 builder.Services.AddCustomCors();
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Logging
-LoggingConfiguration.ConfigureLogging(builder.Configuration);
-builder.Host.UseSerilog();
+//Repository DI
+builder.Services.AddScoped<IRepository<News>, Repository<News>>();
+//Services DI
+builder.Services.AddScoped<INewsService, NewsService>();
+
 
 
 // DB
@@ -28,14 +35,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Events.OnRedirectToLogin = context =>
-    {
-        context.Response.StatusCode = 401;
-        return Task.CompletedTask;
-    };
-});
+
 
 
 
