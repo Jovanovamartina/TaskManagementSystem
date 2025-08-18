@@ -19,6 +19,15 @@ namespace Application_TaskManagement.Services
         }
         public async Task<NewsDto> CreateNews(NewsDto dto)
         {
+            if (dto.IsGeneral)
+            {
+                dto.ProjectId = 0; 
+            }
+            else
+            {
+                if (dto.ProjectId == 0)
+                    throw new ArgumentException("Project news must have a valid ProjectId.");
+            }
             var news = _mapper.Map<News>(dto);
             news.CreatedAt = DateTime.UtcNow;
 
