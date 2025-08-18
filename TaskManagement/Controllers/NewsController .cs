@@ -22,7 +22,7 @@ namespace TaskManagement.Controllers
             return Ok(news);
         }
 
-        // 
+        // GET 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -30,7 +30,7 @@ namespace TaskManagement.Controllers
             return Ok(news);
         }
 
-        // GET
+        // GET 
         [HttpGet("project/{projectId}")]
         public async Task<IActionResult> GetByProjectId(int projectId)
         {
