@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Common\**" />
+    <Compile Remove="IServices\**" />
+    <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <EmbeddedResource Remove="IServices\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Common\**" />
+    <None Remove="IServices\**" />
+    <None Remove="Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="jose-jwt" Version="5.1.1" />
     <PackageReference Include="MailKit" Version="4.11.0" />
@@ -23,12 +35,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core_TaskManagement\Core_TaskManagement.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\" />
-    <Folder Include="IServices\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

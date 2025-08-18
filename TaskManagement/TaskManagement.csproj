@@ -8,6 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\**" />
+    <Compile Remove="Logs\**" />
+    <Content Remove="Controllers\**" />
+    <Content Remove="Logs\**" />
+    <EmbeddedResource Remove="Controllers\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <None Remove="Controllers\**" />
+    <None Remove="Logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MailKit" Version="4.11.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
@@ -28,11 +39,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Core_TaskManagement\Core_TaskManagement.csproj" />
     <ProjectReference Include="..\Infrastructure_TaskManagement\Infrastructure_TaskManagement.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>
