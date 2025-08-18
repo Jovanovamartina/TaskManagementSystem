@@ -5,10 +5,11 @@ namespace Application_TaskManagement.IServices
 {
     public interface INewsService 
     {
-        Task<NewsDto> CreateAsync(NewsDto dto);
-        Task<NewsDto> UpdateAsync(int id, NewsDto dto);
-        Task DeleteAsync(int id);
-        Task<IEnumerable<NewsDto>> GetAllAsync();
-        Task<IEnumerable<NewsDto>> GetByProjectIdAsync(int projectId);
+        Task<NewsDto> CreateNews(NewsDto dto);
+        Task<NewsDto> UpdateNews(int id, NewsDto dto);
+        Task DeleteNews(int id);
+        Task<IEnumerable<NewsDto>> GetAllNews();
+        Task<NewsDto> GetNewsById(int id);
+        Task<IEnumerable<NewsDto>> GetNewsByProjectId(int projectId);
     }
 }

@@ -7,14 +7,11 @@ using Core_TaskManagement.Entities;
 using Infrastructure_TaskManagement.Database;
 using Infrastructure_TaskManagement.Repository;
 using Microsoft.EntityFrameworkCore;
-using TaskManagement.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Services
-builder.Services.AddJwtAuthentication();
 builder.Services.AddProblemDetails();
-builder.Services.AddCustomCors();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

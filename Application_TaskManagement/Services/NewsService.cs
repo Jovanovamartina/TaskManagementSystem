@@ -17,7 +17,7 @@ namespace Application_TaskManagement.Services
             _newsRepository = newsRepository;
             _mapper = mapper;
         }
-        public async Task<NewsDto> CreateAsync(NewsDto dto)
+        public async Task<NewsDto> CreateNews(NewsDto dto)
         {
             var news = _mapper.Map<News>(dto);
             news.CreatedAt = DateTime.UtcNow;
@@ -26,7 +26,7 @@ namespace Application_TaskManagement.Services
             return _mapper.Map<NewsDto>(news);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteNews(int id)
         {
             var news = await _newsRepository.GetById(id);
 
@@ -36,22 +36,30 @@ namespace Application_TaskManagement.Services
             await _newsRepository.Delete(id);
         }
 
-        public async Task<IEnumerable<NewsDto>> GetAllAsync()
+        public async Task<IEnumerable<NewsDto>> GetAllNews()
         {
             var newList = await _newsRepository.GetAll();
             return _mapper.Map<IEnumerable<NewsDto>>(newList);
         }
 
-        public async Task<IEnumerable<NewsDto>> GetByProjectIdAsync(int projectId)
+        public async Task<NewsDto> GetNewsById(int id)
+        {
+            var news = await _newsRepository.GetById(id);
+            if (news == null)
+                throw new KeyNotFoundException($"News with Id {id} was not found.");
+
+            return _mapper.Map<NewsDto>(news);
+        }
+
+        // Get all news by ProjectId
+        public async Task<IEnumerable<NewsDto>> GetNewsByProjectId(int projectId)
         {
             var allNews = await _newsRepository.GetAll();
-
             var filteredNews = allNews.Where(n => n.ProjectId == projectId);
-
             return _mapper.Map<IEnumerable<NewsDto>>(filteredNews);
         }
 
-        public async Task<NewsDto> UpdateAsync(int id, NewsDto dto)
+        public async Task<NewsDto> UpdateNews(int id, NewsDto dto)
         {
             var existingNews = await _newsRepository.GetById(id);
             if (existingNews == null)
