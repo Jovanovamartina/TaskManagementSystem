@@ -9,5 +9,7 @@ namespace Application_TaskManagement.DTOs
         public string? Description { get; set; }
         public string? FilePath { get; set; }
         public int ProjectId { get; set; }
+        public bool IsGeneral { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

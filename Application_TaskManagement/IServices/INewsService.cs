@@ -8,8 +8,8 @@ namespace Application_TaskManagement.IServices
         Task<NewsDto> CreateNews(NewsDto dto);
         Task<NewsDto> UpdateNews(int id, NewsDto dto);
         Task DeleteNews(int id);
-        Task<IEnumerable<NewsDto>> GetAllNews();
         Task<NewsDto> GetNewsById(int id);
-        Task<IEnumerable<NewsDto>> GetNewsByProjectId(int projectId);
+        Task<IEnumerable<NewsDto>> GetLatestNews(int count = 5); 
+        Task<IEnumerable<NewsDto>> GetNewsByProjectId(int projectId); 
     }
 }

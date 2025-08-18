@@ -36,10 +36,16 @@ namespace Application_TaskManagement.Services
             await _newsRepository.Delete(id);
         }
 
-        public async Task<IEnumerable<NewsDto>> GetAllNews()
+        public async Task<IEnumerable<NewsDto>> GetLatestNews(int count = 5)
         {
-            var newList = await _newsRepository.GetAll();
-            return _mapper.Map<IEnumerable<NewsDto>>(newList);
+            var allNews = await _newsRepository.GetAll();
+
+            var generalNews = allNews
+                .Where(n => n.IsGeneral)
+                .OrderByDescending(n => n.CreatedAt) 
+                .Take(count);                        
+
+            return _mapper.Map<IEnumerable<NewsDto>>(generalNews);
         }
 
         public async Task<NewsDto> GetNewsById(int id)
@@ -55,9 +61,14 @@ namespace Application_TaskManagement.Services
         public async Task<IEnumerable<NewsDto>> GetNewsByProjectId(int projectId)
         {
             var allNews = await _newsRepository.GetAll();
-            var filteredNews = allNews.Where(n => n.ProjectId == projectId);
-            return _mapper.Map<IEnumerable<NewsDto>>(filteredNews);
+
+            var projectNews = allNews
+                .Where(n => !n.IsGeneral && n.ProjectId == projectId)
+                .OrderByDescending(n => n.CreatedAt);
+
+            return _mapper.Map<IEnumerable<NewsDto>>(projectNews);
         }
+
 
         public async Task<NewsDto> UpdateNews(int id, NewsDto dto)
         {

@@ -9,7 +9,8 @@ namespace Core_TaskManagement.Entities
         public string? Description { get; set; }
         public string? FilePath { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public int ProjectId { get; set; }
+        public bool IsGeneral { get; set; } = true;
+        public int? ProjectId { get; set; }
         public Project? Project { get; set; }
         public int? CreatedByUserId { get; set; }
         public User? CreatedByUser { get; set; }

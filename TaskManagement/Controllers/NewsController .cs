@@ -13,12 +13,19 @@ namespace TaskManagement.Controllers
         {
             _newsService = newsService;
         }
-
-        // GET 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        //GET
+        [HttpGet("latest")]
+        public async Task<IActionResult> GetLatestNews()
         {
-            var news = await _newsService.GetAllNews();
+            var news = await _newsService.GetLatestNews();
+            return Ok(news);
+        }
+
+        // GET
+        [HttpGet("project/{projectId}/news")]
+        public async Task<IActionResult> GetProjectNews(int projectId)
+        {
+            var news = await _newsService.GetNewsByProjectId(projectId);
             return Ok(news);
         }
 
