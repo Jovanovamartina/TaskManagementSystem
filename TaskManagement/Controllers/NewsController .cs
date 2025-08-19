@@ -13,44 +13,34 @@ namespace TaskManagement.Controllers
         {
             _newsService = newsService;
         }
-        //GET
+        //POST
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] NewsCreateDto dto)
+        {
+            var news = await _newsService.CreateNews(dto);
+            return CreatedAtAction(nameof(GetById), new { id = news.Id }, news);
+        }
+
+        // GET  
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var news = await _newsService.GetNewsById(id);
+            return Ok(news);
+        }
+
         [HttpGet("latest")]
-        public async Task<IActionResult> GetLatestNews()
+        public async Task<IActionResult> GetLatest()
         {
             var news = await _newsService.GetLatestNews();
             return Ok(news);
         }
 
-        // GET
-        [HttpGet("project/{projectId}/news")]
-        public async Task<IActionResult> GetProjectNews(int projectId)
-        {
-            var news = await _newsService.GetNewsByProjectId(projectId);
-            return Ok(news);
-        }
-
-        // GET 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var news = await _newsService.GetNewsByProjectId(id);
-            return Ok(news);
-        }
-
-        // GET 
         [HttpGet("project/{projectId}")]
-        public async Task<IActionResult> GetByProjectId(int projectId)
+        public async Task<IActionResult> GetByProject(int projectId)
         {
             var news = await _newsService.GetNewsByProjectId(projectId);
             return Ok(news);
-        }
-
-        // POST 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] NewsDto dto)
-        {
-            var news = await _newsService.CreateNews(dto);
-            return CreatedAtAction(nameof(GetById), new { id = news.Id }, news);
         }
 
         // PUT

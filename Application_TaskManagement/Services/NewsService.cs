@@ -17,17 +17,18 @@ namespace Application_TaskManagement.Services
             _newsRepository = newsRepository;
             _mapper = mapper;
         }
-        public async Task<NewsDto> CreateNews(NewsDto dto)
+        public async Task<NewsDto> CreateNews(NewsCreateDto dto)
         {
             if (dto.IsGeneral)
             {
-                dto.ProjectId = null; 
+                dto.ProjectId = null;
             }
             else
             {
-                if (dto.ProjectId == 0)
+                if (dto.ProjectId == null || dto.ProjectId == 0)
                     throw new ArgumentException("Project news must have a valid ProjectId.");
             }
+
             var news = _mapper.Map<News>(dto);
             news.CreatedAt = DateTime.UtcNow;
 
@@ -45,36 +46,31 @@ namespace Application_TaskManagement.Services
             await _newsRepository.Delete(id);
         }
 
-        public async Task<IEnumerable<NewsDto>> GetLatestNews(int count = 5)
-        {
-            var allNews = await _newsRepository.GetAll();
-
-            var generalNews = allNews
-                .Where(n => n.IsGeneral)
-                .OrderByDescending(n => n.CreatedAt) 
-                .Take(count);                        
-
-            return _mapper.Map<IEnumerable<NewsDto>>(generalNews);
-        }
-
         public async Task<NewsDto> GetNewsById(int id)
         {
             var news = await _newsRepository.GetById(id);
             if (news == null)
-                throw new KeyNotFoundException($"News with Id {id} was not found.");
+                throw new KeyNotFoundException($"News with Id {id} not found.");
 
             return _mapper.Map<NewsDto>(news);
         }
 
-        // Get all news by ProjectId
+        public async Task<IEnumerable<NewsDto>> GetLatestNews(int count = 5)
+        {
+            var allNews = await _newsRepository.GetAll();
+            var latest = allNews
+                .Where(n => n.IsGeneral)
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(count);
+            return _mapper.Map<IEnumerable<NewsDto>>(latest);
+        }
+
         public async Task<IEnumerable<NewsDto>> GetNewsByProjectId(int projectId)
         {
             var allNews = await _newsRepository.GetAll();
-
             var projectNews = allNews
                 .Where(n => !n.IsGeneral && n.ProjectId == projectId)
                 .OrderByDescending(n => n.CreatedAt);
-
             return _mapper.Map<IEnumerable<NewsDto>>(projectNews);
         }
 
