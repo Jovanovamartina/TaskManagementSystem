@@ -194,19 +194,25 @@ namespace Infrastructure_TaskManagement.Database
             //News
             modelBuilder.Entity<News>(entity =>
             {
+                entity.Property(p => p.Title)
+                      .IsRequired()
+                      .HasMaxLength(100);
 
-                entity.Property(p => p.Title).IsRequired().HasMaxLength(100);
-                entity.Property(p => p.Description).IsRequired().HasMaxLength(1000);
+                entity.Property(p => p.Description)
+                      .IsRequired()
+                      .HasMaxLength(1000);
 
                 entity.HasOne(n => n.Project)
-                .WithMany(p => p.News)
-                .HasForeignKey(n => n.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+                      .WithMany(p => p.News)
+                      .HasForeignKey(n => n.ProjectId)
+                      .IsRequired(false)   
+                      .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(n => n.CreatedByUser)
-                .WithMany()
-                .HasForeignKey(n => n.CreatedByUserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                      .WithMany()
+                      .HasForeignKey(n => n.CreatedByUserId)
+                      .IsRequired(false)     
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             //TaskReminder

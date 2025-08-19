@@ -21,7 +21,7 @@ namespace Application_TaskManagement.Services
         {
             if (dto.IsGeneral)
             {
-                dto.ProjectId = 0; 
+                dto.ProjectId = null; 
             }
             else
             {
