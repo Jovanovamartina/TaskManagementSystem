@@ -10,8 +10,11 @@ namespace Application_TaskManagement.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<NewsCreateDto, News>();
-            CreateMap<News, NewsDto>();
+            CreateMap<NewsCreateDto, News>().ReverseMap();
+            CreateMap<News, NewsDto>().ReverseMap();
+            CreateMap<RegisterDto, User>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<UpdateUserDto, User>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

@@ -26,44 +26,58 @@ namespace TaskManagement.Controllers
             _mapper = mapper;
         }
 
-        // POST
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            var user = await _userService.RegisterAsync(dto);
-            var userDto = _mapper.Map<UserDto>(user);
-            return CreatedAtAction(nameof(GetById), new { id = user.UserID }, userDto);
+            try
+            {
+                var userDto = await _userService.RegisterAsync(dto);
+                return CreatedAtAction(nameof(GetById), new { id = userDto.UserID }, userDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         // POST
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var user = await _userService.LoginAsync(dto);
-            if (user == null) return Unauthorized("Invalid username or password.");
-
-            // Generate JWT token
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings.GetValue<string>("SecretKey");
-            var expiryMinutes = jwtSettings.GetValue<int>("ExpiryMinutes");
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(secretKey);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            try
             {
-                Subject = new ClaimsIdentity(new[]
+                var user = await _userService.LoginAsync(dto);
+
+                // JWT settings
+                var jwtSettings = _configuration.GetSection("JwtSettings");
+                var secretKey = jwtSettings.GetValue<string>("SecretKey");
+                var expiryMinutes = jwtSettings.GetValue<int>("ExpiryMinutes");
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(secretKey);
+
+                var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                new Claim("id", user.UserID.ToString()),
-                new Claim(ClaimTypes.Name, user.Username!)
-            }),
-                Expires = DateTime.UtcNow.AddMinutes(expiryMinutes),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                    new Claim("id", user.UserID.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username)
+                }),
+                    Expires = DateTime.UtcNow.AddMinutes(expiryMinutes),
+                    SigningCredentials = new SigningCredentials(
+                        new SymmetricSecurityKey(key),
+                        SecurityAlgorithms.HmacSha256Signature)
+                };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var tokenString = tokenHandler.WriteToken(token);
 
-            return Ok(new { Token = tokenString, User = user });
+                return Ok(new { Token = tokenString, User = user });
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
         }
         // GET
         [HttpGet("{id}")]
@@ -83,7 +97,7 @@ namespace TaskManagement.Controllers
 
         // PUT
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] RegisterDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
         {
             try
             {

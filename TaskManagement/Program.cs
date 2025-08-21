@@ -30,6 +30,7 @@ builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 
+builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
 // DB
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

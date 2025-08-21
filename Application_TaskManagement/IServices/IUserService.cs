@@ -10,7 +10,7 @@ namespace Application_TaskManagement.IServices
         Task<UserDto> LoginAsync(LoginDto dto);
         Task<UserDto?> GetByIdAsync(int id);
         Task<IEnumerable<UserDto>> GetAllAsync();
-        Task UpdateAsync(int id, RegisterDto dto);
+        Task UpdateAsync(int id, UpdateUserDto dto);
         Task DeleteAsync(int id);
     }
 }

@@ -21,12 +21,22 @@ namespace TaskManagement.Controllers
             return CreatedAtAction(nameof(GetById), new { id = news.Id }, news);
         }
 
-        // GET  
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var news = await _newsService.GetNewsById(id);
-            return Ok(news);
+            try
+            {
+                var news = await _newsService.GetNewsById(id);
+
+                if (news == null)
+                    return NotFound(new { message = $"News with Id {id} not found." });
+
+                return Ok(news);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet("latest")]

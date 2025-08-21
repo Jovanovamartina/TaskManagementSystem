@@ -12,12 +12,14 @@ namespace Application_TaskManagement.Services
     {
         private readonly IRepository<User> _userRepository;
         private readonly IMapper _mapper;
+        private readonly IPasswordHasher _passwordHasher;
 
 
-        public UserService(IRepository<User> userRepository, IMapper mapper)
+        public UserService(IRepository<User> userRepository, IMapper mapper, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<UserDto> RegisterAsync(RegisterDto dto)
@@ -28,47 +30,36 @@ namespace Application_TaskManagement.Services
             if (existingUser != null)
                 throw new Exception("Username already exists.");
 
-            var user = new User
-            {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Username = dto.Username,
-                Password = dto.Password
-            };
+            var user = _mapper.Map<User>(dto);
+
+            user.Password = _passwordHasher.Hash(dto.Password);
 
             await _userRepository.Add(user);
 
-            return new UserDto
-            {
-                UserID = user.UserID,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Username = user.Username
-            };
+            var userDto = _mapper.Map<UserDto>(user);
+
+            return userDto;
         }
 
         public async Task<UserDto> LoginAsync(LoginDto dto)
         {
             var user = (await _userRepository.GetAll())
-                .FirstOrDefault(u => u.Username == dto.Username && u.Password == dto.Password);
+                .FirstOrDefault(u => u.Username == dto.Username);
 
-            if (user == null)
+            if (user == null || !_passwordHasher.Verify(user.Password, dto.Password))
                 throw new Exception("Invalid username or password.");
 
-            return new UserDto
-            {
-                UserID = user!.UserID,
-                FirstName = user!.FirstName!,
-                LastName = user!.LastName!,
-                Username = user!.Username!
-            };
+            return _mapper.Map<UserDto>(user);
         }
-
-
         public async Task<UserDto?> GetByIdAsync(int id)
         {
             var user = await _userRepository.GetById(id);
-            return user == null ? null : _mapper.Map<UserDto>(user);
+
+            if (user == null)
+                return null;
+
+            var userDto = _mapper.Map<UserDto>(user);
+            return userDto;
         }
 
         public async Task<IEnumerable<UserDto>> GetAllAsync()
@@ -77,19 +68,21 @@ namespace Application_TaskManagement.Services
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task UpdateAsync(int id, RegisterDto dto)
+        public async Task UpdateAsync(int id, UpdateUserDto dto)
         {
             var user = await _userRepository.GetById(id);
-            if (user == null) throw new KeyNotFoundException();
+            if (user == null)
+                throw new KeyNotFoundException($"User with Id {id} not found.");
 
-            user.FirstName = dto.FirstName;
-            user.LastName = dto.LastName;
-            user.Username = dto.Username;
-            user.Password = dto.Password; 
+            _mapper.Map(dto, user);
+
+            if (!string.IsNullOrEmpty(dto.NewPassword))
+            {
+                user.Password = _passwordHasher.Hash(dto.NewPassword);
+            }
 
             await _userRepository.Update(user);
         }
-
         public async Task DeleteAsync(int id)
         {
             await _userRepository.Delete(id);
