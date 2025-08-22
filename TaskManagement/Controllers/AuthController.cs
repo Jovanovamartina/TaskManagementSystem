@@ -49,7 +49,7 @@ namespace TaskManagement.Controllers
                 var user = await _userService.LoginAsync(dto);
 
                 // JWT settings
-                var jwtSettings = _configuration.GetSection("JwtSettings");
+                var jwtSettings = _configuration.GetSection("AppJwtSettings");
                 var secretKey = jwtSettings.GetValue<string>("SecretKey");
                 var expiryMinutes = jwtSettings.GetValue<int>("ExpiryMinutes");
 
