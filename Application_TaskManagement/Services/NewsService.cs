@@ -75,7 +75,7 @@ namespace Application_TaskManagement.Services
         }
 
 
-        public async Task<NewsDto> UpdateNews(int id, NewsDto dto)
+        public async Task<NewsUpdateDto> UpdateNews(int id, NewsUpdateDto dto)
         {
             var existingNews = await _newsRepository.GetById(id);
             if (existingNews == null)
@@ -85,7 +85,7 @@ namespace Application_TaskManagement.Services
 
             await _newsRepository.Update(existingNews);
 
-            return _mapper.Map<NewsDto>(existingNews);
+            return _mapper.Map<NewsUpdateDto>(existingNews);
         }
     }
 }

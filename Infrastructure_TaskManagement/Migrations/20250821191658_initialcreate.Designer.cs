@@ -3,15 +3,17 @@ using System;
 using Infrastructure_TaskManagement.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Infrastructure_TaskManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250817112411_add-migration initialcreate")]
-    partial class InitialCreate
+    [Migration("20250821191658_initialcreate")]
+    partial class initialcreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -190,10 +192,10 @@ namespace Infrastructure_TaskManagement.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsGeneral")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int?>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -294,6 +296,12 @@ namespace Infrastructure_TaskManagement.Migrations
                     b.Property<string>("LastName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserID");
 
@@ -401,8 +409,7 @@ namespace Infrastructure_TaskManagement.Migrations
                     b.HasOne("Core_TaskManagement.Entities.Project", "Project")
                         .WithMany("News")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("CreatedByUser");
 

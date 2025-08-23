@@ -53,13 +53,13 @@ namespace TaskManagement.Controllers
             return Ok(news);
         }
 
-        // PUT
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] NewsDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] NewsUpdateDto dto)
         {
             var news = await _newsService.UpdateNews(id, dto);
             return Ok(news);
         }
+
 
         // DELETE
         [HttpDelete("{id}")]
