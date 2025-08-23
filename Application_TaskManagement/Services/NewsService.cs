@@ -26,7 +26,7 @@ namespace Application_TaskManagement.Services
             else
             {
                 if (dto.ProjectId == null || dto.ProjectId == 0)
-                    throw new ArgumentException("Project news must have a valid ProjectId.");
+                    throw new ArgumentException("Project news must have a valid ProjectId!");
             }
 
             var news = _mapper.Map<News>(dto);
